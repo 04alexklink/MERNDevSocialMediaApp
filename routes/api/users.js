@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const gravatar = require('gravatar')
+const bcrypt = require('bcryptjs')
 const { check, validationResult } = require('express-validator/check')
 const User = require('../../models/User')
 
@@ -25,6 +26,9 @@ router.post('/', [
       r: 'pg',
       d: 'mm'
     })
+    user = new User({name, email, password, avatar})
+    const salt = await bcrypt.genSalt(10)
+    user.password = await bcrypt.hash(password, salt)
     // res.send("User Registration")
 
   } catch (err) {
