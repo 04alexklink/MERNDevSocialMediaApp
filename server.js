@@ -3,6 +3,7 @@ const DBConnect = require('./config/db')
 
 const app = express();
 DBConnect();
+app.use(express.json({extended: true}))
 
 app.get('/', (req, res) => res.send("API Working"))
 //Define routes
