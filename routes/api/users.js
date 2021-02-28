@@ -20,7 +20,12 @@ router.post('/', [
   try {
     let user = await User.findOne({ email: email })
     if(user) { res.status(400).json({errors: [ {msg: 'User already exists'}]})}
-    res.send("User Registration")
+    const avatar = gravatar.url(email, {
+      s: 200,
+      r: 'pg',
+      d: 'mm'
+    })
+    // res.send("User Registration")
 
   } catch (err) {
     console.error(err.message)
