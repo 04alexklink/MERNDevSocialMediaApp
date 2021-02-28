@@ -29,7 +29,8 @@ router.post('/', [
     user = new User({name, email, password, avatar})
     const salt = await bcrypt.genSalt(10)
     user.password = await bcrypt.hash(password, salt)
-    // res.send("User Registration")
+    await user.save()
+    res.send("User Registered")
 
   } catch (err) {
     console.error(err.message)
