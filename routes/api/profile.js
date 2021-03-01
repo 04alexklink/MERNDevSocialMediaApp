@@ -80,8 +80,18 @@ router.post('/', [auth, [
     console.error(err.message);
     res.status(500).send('Server Error')
   }
+})
 
-}
-
-)
+// @route GET api/profile
+// @description gets all profiles
+// @access PUBLIC
+router.get('/', async (req, res) => {
+  try{
+    let profiles = await Profile.find().populate('user', ['name', 'avatar'])
+    res.json(profiles)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send('Server Error')
+  }
+})
 module.exports = router;
