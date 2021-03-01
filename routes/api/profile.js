@@ -21,6 +21,22 @@ router.get('/me', auth, async (req, res) => {
     res.status(500).send('Server Error')
   }
 })
+// @route GET api/profile/user/:user_id
+// @description gets profile by user id
+// @access PUBLIC
+router.get('/user/:user_id', async (req, res) => {
+  try{
+    const profile = await Profile.findOne({ user: req.params.user_id })
+    .populate('user', ['name', 'avatar'])
+    if(!profile) {
+      return res.status(400).json({msg: 'There is no profile for this user'})
+    }
+    res.json(profile)
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error')
+  }
+})
 // @route POST api/profile
 // @description create or update a profile
 // @access PRIVATE
