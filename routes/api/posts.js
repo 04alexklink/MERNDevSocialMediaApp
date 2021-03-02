@@ -58,5 +58,22 @@ router.get('/:id', auth, async (req, res) => {
     res.status(500).send('Server Error')
   }
 })
+// @route DELETE api/posts/:id
+// @description delete post by id
+// @access Private
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id)
+    if(!post) {return res.status(404).json({msg: 'This post does not exist to delete'})}
+    if(post.user.toString() !== req.user.id) { return res.status(400)
+      .json({msg: 'This post can only be deleted by the owner of the post'})
+    }
+    await Post.findOneAndDelete({_id: req.params.id})
+    res.json({msg: 'Post has been deleted'})
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error')
+  }
+})
 
 module.exports = router;
