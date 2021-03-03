@@ -139,4 +139,33 @@ check('text', 'Comments must contain text').not().isEmpty() ]],async (req, res) 
     res.status(500).send('Server Error')
   }
 })
+// @route DELETE api/posts/comment/:id/:comment_id
+// @description delete a comment on a post
+// @access Private
+router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
+  try {
+  // find post
+  const post = await Post.findById(req.params.id)
+  // find comment
+  const comment = post.comments.filter((comment) => {
+    if(comment.id === req.params.comment_id) {
+      return comment
+    }
+  })
+  // see if comment exists. If not, send json saying this comment doesn't exist
+  if(comment.length === 0) {return res.status(400).json({msg: 'Comment does not exist.'})}
+  // check if comment was created by the user trying to delete it
+  if((comment[0].user.toString() !== req.user.id) && (post.user.toString() !== req.user.id)) {
+    return res.status(401).json({msg: "User not authorised to delete this comment"})
+  }
+  // if user owns the post or the comment, then proceed to delete
+  const commentIndex = post.comments.map(comment => comment.id).indexOf(req.params.comment_id)
+  post.comments.splice(commentIndex, 1)
+  post.save()
+  res.json( post.comments)
+  } catch (error) {
+    console.error(error.message)
+    res.status(500).send('Server Error')
+  }
+})
 module.exports = router;
