@@ -1,13 +1,35 @@
-import {REGISTER_FAIL, REGISTER_SUCCESS} from './types'
+import {REGISTER_FAIL, REGISTER_SUCCESS, AUTH_ERROR, USER_LOADED} from './types'
 import {setAlert} from './alert'
 import axios from 'axios'
+import setAuthToken from '../utils/setAuthToken'
 
+// User load async action creator fn 
+
+export const loadUser = () => async dispatch => {
+  if(localStorage.token) {
+    setAuthToken(localStorage.token)
+  }
+  try {
+    const res = await axios.get('http://localhost:5000/api/auth')
+    dispatch({
+      type: USER_LOADED,
+      payload: res.data
+    })
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR
+    })
+  }
+}
+
+// REGISTER_FAIL action creator function
 export const registerFail = () => {
   return {
     type: REGISTER_FAIL,
   }
 }
 
+// REGISTER_SUCCESS action creator function
 export const registerSuccess = (token) => {
   return {
     type: REGISTER_SUCCESS,
@@ -15,6 +37,8 @@ export const registerSuccess = (token) => {
   }
 }
 
+
+// register a user
 export const register = ({ name, email, password }) => async dispatch => {
   const config = {
     headers: {
